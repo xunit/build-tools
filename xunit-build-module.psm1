@@ -119,6 +119,14 @@ function _require([string] $command, [string] $message) {
     }
 }
 
+function _verify_dotnetsdk_version([string]$minVersion) {
+    $version = [version](& dotnet --version)
+
+    if ($version -lt [version]$minVersion) {
+        _fatal "``dotnet --version`` must be '$minVersion' or later; got '$version'."
+    }
+}
+
 function _verify_msbuild15() {
     $version = & msbuild /nologo /ver
 
