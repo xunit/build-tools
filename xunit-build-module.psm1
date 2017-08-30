@@ -123,20 +123,18 @@ function _require([string] $command, [string] $message) {
     }
 }
 
-function _verify_dotnetsdk_version([string]$minVersion) {
-    $version = [version](& dotnet --version)
-
-    if ($version -lt [version]$minVersion) {
-        _fatal "``dotnet --version`` must be '$minVersion' or later; got '$version'."
+function _verify_version([string]$version, [string]$minVersion, [string]$appName) {
+    if ([version]$version -lt [version]$minVersion) {
+        _fatal ("Unsupported " + $appName + " version '$version' (must be '$minVersion' or later).")
     }
 }
 
-function _verify_msbuild15() {
-    $version = & msbuild /nologo /ver
+function _verify_dotnetsdk_version([string]$minVersion) {
+    _verify_version (& dotnet --version) $minVersion ".NET SDK"
+}
 
-    if (-not $version.StartsWith("15.")) {
-        _fatal "Unexpected MSBUILD version $version. Please ensure MSBUILD.EXE v15 is on the path."
-    }
+function _verify_msbuild_version([string]$minVersion) {
+    _verify_version (& msbuild /nologo /ver) $minVersion ".NET SDK"
 }
 
 Export-ModuleMember -Function * -Variable nugetExe
