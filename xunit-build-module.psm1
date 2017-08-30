@@ -60,8 +60,12 @@ function _mkdir([string] $path) {
     }
 }
 
-function _msbuild([string] $project, [string] $configuration, [string] $target = "build", [string] $verbosity = "minimal", [string] $message = "") {
-    _exec ("msbuild " + $project + " /t:" + $target + " /p:Configuration=" + $configuration + " /v:" + $verbosity + " /m /nologo") $message
+function _msbuild([string] $project, [string] $configuration, [string] $target = "build", [string] $verbosity = "minimal", [string] $message = "", [string] $binlogFile = "") {
+    $cmd = "msbuild " + $project + " /t:" + $target + " /p:Configuration=" + $configuration + " /v:" + $verbosity + " /m /nologo"
+    if ($binlogFile -ne "") {
+        $cmd = $cmd + " /bl:" + $binlogFile
+    }
+    _exec $cmd $message
 }
 
 function _nuget_pack {
