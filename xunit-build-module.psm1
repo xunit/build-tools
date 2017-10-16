@@ -134,7 +134,7 @@ function _verify_dotnetsdk_version([string]$minVersion) {
 }
 
 function _verify_msbuild_version([string]$minVersion) {
-    _verify_version (& msbuild /nologo /ver) $minVersion ".NET SDK"
+    _verify_version (& msbuild /nologo /ver) $minVersion "MSBuild"
 }
 
 Export-ModuleMember -Function * -Variable nugetExe
