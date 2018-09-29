@@ -124,6 +124,11 @@ function _require([string] $command, [string] $message) {
 }
 
 function _verify_version([string]$version, [string]$minVersion, [string]$appName) {
+    $dashIndex = $version.IndexOf('-')
+    if ($dashIndex -gt -1) {
+        $version = $version.Substring(0, $dashIndex)
+    }
+
     if ([version]$version -lt [version]$minVersion) {
         _fatal ("Unsupported " + $appName + " version '$version' (must be '$minVersion' or later).")
     }
