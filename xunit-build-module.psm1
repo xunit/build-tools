@@ -60,8 +60,20 @@ function _mkdir([string] $path) {
     }
 }
 
+function _get_msbuild_path() {
+    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    if (-not (Test-Path -LiteralPath $vswhere -PathType Leaf)) {
+        # Windows 32-bit prior to Windows 10 doesn't have the ProgramFiles(x86) environment variable.
+        $vswhere = "${env:ProgramFiles}\Microsoft Visual Studio\Installer\vswhere.exe"
+    }
+    if (Test-Path -LiteralPath $vswhere -PathType Leaf) {
+        $path = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+        "$path\MSBuild\15.0\Bin\MSBuild.exe"
+    }
+}
+
 function _msbuild([string] $project, [string] $configuration, [string] $target = "build", [string] $verbosity = "minimal", [string] $message = "", [string] $binlogFile = "") {
-    $cmd = "msbuild " + $project + " /t:" + $target + " /p:Configuration=" + $configuration + " /v:" + $verbosity + " /m /nologo"
+    $cmd = "& `"$msbuild`" " + $project + " /t:" + $target + " /p:Configuration=" + $configuration + " /v:" + $verbosity + " /m /nologo"
     if ($binlogFile -ne "") {
         $cmd = $cmd + " /bl:" + $binlogFile
     }
@@ -139,7 +151,8 @@ function _verify_dotnetsdk_version([string]$minVersion) {
 }
 
 function _verify_msbuild_version([string]$minVersion) {
-    _verify_version (& msbuild /nologo /ver) $minVersion "MSBuild"
+    _verify_version (& $msbuild /nologo /ver) $minVersion "MSBuild"
 }
 
-Export-ModuleMember -Function * -Variable nugetExe
+$msbuild = _get_msbuild_path
+Export-ModuleMember -Function * -Variable nugetExe, msbuild
