@@ -61,7 +61,7 @@ function _mkdir([string] $path) {
 }
 
 function _msbuild([string] $project, [string] $configuration, [string] $target = "build", [string] $verbosity = "minimal", [string] $message = "", [string] $binlogFile = "") {
-    $cmd = "msbuild " + $project + " /t:" + $target + " /p:Configuration=" + $configuration + " /v:" + $verbosity + " /m /nologo"
+    $cmd = "msbuild " + $project + " /t:" + $target + " /p:Configuration=" + $configuration + " /v:" + $verbosity + " /m"
     if ($binlogFile -ne "") {
         $cmd = $cmd + " /bl:" + $binlogFile
     }
